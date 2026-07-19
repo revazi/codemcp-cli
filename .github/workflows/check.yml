@@ -68,7 +68,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12", "3.13", "3.14"]
+        python-version: ["3.13", "3.14"]
 
     steps:
       - name: Check out repository
@@ -85,6 +85,32 @@ jobs:
       - name: Sync test environment
         run: uv sync --locked --no-default-groups --group test
 
+      - name: Run tests
+        run: uv run --no-sync pytest tests/python -q
+
+  coverage:
+    name: Coverage (Python 3.12)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          cache-dependency-glob: uv.lock
+          enable-cache: true
+          python-version: "3.12"
+          version: "0.11.29"
+
+      - name: Sync test environment
+        run: uv sync --locked --no-default-groups --group test
+
       - name: Run tests with branch coverage
         run: >-
           uv run --no-sync pytest tests/python -q
@@ -93,8 +119,16 @@ jobs:
           --cov-report=term-missing
           --cov-report=xml
 
+      - name: Publish coverage to Codecov
+        if: github.event_name != 'pull_request'
+        uses: codecov/codecov-action@0fb7174895f61a3b6b78fc075e0cd60383518dac # v5.5.5
+        with:
+          disable_search: true
+          fail_ci_if_error: true
+          files: coverage.xml
+          use_oidc: true
+
       - name: Upload coverage report
-        if: matrix.python-version == '3.12'
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           if-no-files-found: error

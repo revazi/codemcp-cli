@@ -1,5 +1,12 @@
 # codemcp-cli
 
+[![CI](https://github.com/revazi/codemcp-cli/actions/workflows/check.yml/badge.svg?branch=main)](https://github.com/revazi/codemcp-cli/actions/workflows/check.yml)
+[![Coverage](https://codecov.io/gh/revazi/codemcp-cli/graph/badge.svg?branch=main)](https://codecov.io/gh/revazi/codemcp-cli)
+![Python](https://img.shields.io/badge/Python-3.12_%7C_3.13_%7C_3.14-3776AB?logo=python&logoColor=white)
+[![License](https://img.shields.io/github/license/revazi/codemcp-cli)](LICENSE)
+![Typing](https://img.shields.io/badge/typing-py.typed-blue)
+![Status](https://img.shields.io/badge/status-alpha-orange)
+
 Standalone local CodeMCP CLI runtime for typed, sandboxed MCP Code Mode.
 
 `codemcp-cli` reads a local MCP configuration, discovers upstream MCP tools lazily, exposes a typed Python SDK facade for those tools, and executes model-authored call graphs inside Pydantic Monty's sandbox. It can also save reusable typed call graphs as scoped chains.
