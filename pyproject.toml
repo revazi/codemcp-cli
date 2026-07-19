@@ -7,8 +7,18 @@ name = "codemcp-cli"
 version = "0.1.0"
 description = "Standalone CodeMCP CLI runtime for typed, sandboxed MCP Code Mode"
 readme = "README.md"
-license = { file = "LICENSE" }
+license = "MIT"
+license-files = ["LICENSE"]
 requires-python = ">=3.12"
+classifiers = [
+  "Environment :: Console",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Typing :: Typed",
+]
 dependencies = [
   "fastmcp==3.4.4",
   "httpx==0.28.1",
@@ -23,13 +33,29 @@ codemcp-cli = "codemcp_cli.cli:main"
 
 [dependency-groups]
 dev = [
-  "mypy==2.2.0",
+  { include-group = "lint" },
+  { include-group = "package" },
+  { include-group = "test" },
   "prek==0.4.8",
-  "pytest==8.4.2",
-  "pytest-asyncio==1.4.0",
+]
+lint = [
+  "mypy==2.2.0",
   "ruff==0.15.21",
   "ty==0.0.58",
 ]
+package = [
+  "check-wheel-contents==0.6.3",
+  "twine==6.2.0",
+]
+test = [
+  "pytest==8.4.2",
+  "pytest-asyncio==1.4.0",
+  "pytest-cov==7.0.0",
+]
+
+[project.urls]
+Issues = "https://github.com/revazi/codemcp-cli/issues"
+Repository = "https://github.com/revazi/codemcp-cli"
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -44,8 +70,21 @@ include = [
 packages = ["src/codemcp_cli"]
 
 [tool.pytest.ini_options]
+addopts = ["--strict-config", "--strict-markers"]
 asyncio_mode = "auto"
 pythonpath = ["src", "."]
+
+[tool.coverage.run]
+branch = true
+source = ["codemcp_cli"]
+
+[tool.coverage.report]
+fail_under = 80
+show_missing = true
+skip_covered = true
+
+[tool.coverage.xml]
+output = "coverage.xml"
 
 [tool.ruff]
 required-version = "==0.15.21"

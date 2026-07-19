@@ -192,7 +192,10 @@ just check
 Useful recipes:
 
 ```bash
-just format      # safe Ruff formatting/fixes
-just test        # pytest only
-just typecheck   # mypy + ty
+just format          # safe Ruff formatting/fixes
+just test            # pytest only
+just typecheck       # mypy + ty
+just package-check   # build and validate wheel/sdist metadata and contents
 ```
+
+GitHub Actions runs quality checks once, enforces at least 80% branch-aware coverage while testing the locked environment on Python 3.12–3.14, validates an installed wheel, and retains coverage and distribution artifacts. Action revisions and the uv version are pinned; Dependabot proposes dependency and action updates.

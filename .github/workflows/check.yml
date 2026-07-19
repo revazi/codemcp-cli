@@ -3,44 +3,148 @@ name: check
 on:
   pull_request:
   push:
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+  UV_NO_PROGRESS: "1"
+
 jobs:
-  check:
+  quality:
+    name: Quality
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          cache-dependency-glob: uv.lock
+          enable-cache: true
+          python-version: "3.12"
+          version: "0.11.29"
+
+      - name: Verify lockfile
+        run: uv lock --check
+
+      - name: Sync quality environment
+        run: uv sync --locked --no-default-groups --group lint --group test
+
+      - name: Check formatting
+        run: uv run --no-sync ruff format --check src/codemcp_cli tests/python tests/fixtures
+
+      - name: Lint
+        run: uv run --no-sync ruff check src/codemcp_cli tests/python tests/fixtures
+
+      - name: Type-check with mypy
+        run: >-
+          uv run --no-sync mypy src/codemcp_cli
+          tests/python/test_executor.py
+          tests/python/test_settings.py
+          tests/python/test_cli.py
+
+      - name: Type-check with ty
+        run: >-
+          uv run --no-sync ty check --project . src/codemcp_cli
+          tests/python/test_executor.py
+          tests/python/test_settings.py
+          tests/python/test_cli.py
+
+  test:
+    name: Test (Python ${{ matrix.python-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["3.12", "3.13"]
+        python-version: ["3.12", "3.13", "3.14"]
 
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
         with:
+          cache-dependency-glob: uv.lock
           enable-cache: true
           python-version: ${{ matrix.python-version }}
+          version: "0.11.29"
 
-      - name: Sync locked environment
-        run: uv sync --frozen --all-groups
+      - name: Sync test environment
+        run: uv sync --locked --no-default-groups --group test
 
-      - name: Check lockfile
-        run: uv lock --check
+      - name: Run tests with branch coverage
+        run: >-
+          uv run --no-sync pytest tests/python -q
+          --cov=codemcp_cli
+          --cov-branch
+          --cov-report=term-missing
+          --cov-report=xml
 
-      - name: Check formatting
-        run: uv run ruff format --check src/codemcp_cli tests/python tests/fixtures
+      - name: Upload coverage report
+        if: matrix.python-version == '3.12'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          if-no-files-found: error
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 7
 
-      - name: Lint
-        run: uv run ruff check src/codemcp_cli tests/python tests/fixtures
+  package:
+    name: Package
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
 
-      - name: Type-check
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Install uv and Python
+        uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6.8.0
+        with:
+          cache-dependency-glob: uv.lock
+          enable-cache: true
+          python-version: "3.12"
+          version: "0.11.29"
+
+      - name: Sync package environment
+        run: uv sync --locked --no-default-groups --group package
+
+      - name: Build wheel and source distribution
+        run: uv build --out-dir dist
+
+      - name: Validate distribution metadata
+        run: uv run --no-sync twine check dist/*
+
+      - name: Validate wheel contents
+        run: uv run --no-sync check-wheel-contents dist/*.whl
+
+      - name: Smoke-test installed wheel
         run: |
-          uv run mypy src/codemcp_cli tests/python/test_executor.py tests/python/test_settings.py tests/python/test_cli.py
-          uv run ty check --project . src/codemcp_cli tests/python/test_executor.py tests/python/test_settings.py tests/python/test_cli.py
+          uv venv --python 3.12 .package-venv
+          uv pip install --python .package-venv/bin/python dist/*.whl
+          .package-venv/bin/python -c \
+            'import codemcp_cli; from codemcp_cli.api import create_runtime; print(codemcp_cli.__version__, create_runtime.__name__)'
+          .package-venv/bin/codemcp-cli --help
+          .package-venv/bin/python -m codemcp_cli --help
+          test ! -e .package-venv/bin/codemcp
 
-      - name: Test
-        run: uv run pytest tests/python -q
-
-      - name: Build distributions
-        run: uv build
+      - name: Upload distributions
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          if-no-files-found: error
+          name: distributions
+          path: dist/
+          retention-days: 7

@@ -27,6 +27,12 @@ typecheck:
     uv run ty check --project . src/codemcp_cli tests/python/test_executor.py tests/python/test_settings.py tests/python/test_cli.py
 
 test:
-    uv run pytest tests/python -q
+    uv run pytest tests/python --cov=codemcp_cli --cov-branch --cov-report=term-missing -q
 
-check: check-lock format-check lint typecheck test
+package-check:
+    tmp="$(mktemp -d)"; trap 'rm -rf "$tmp"' EXIT; \
+        uv build --out-dir "$tmp"; \
+        uv run twine check "$tmp"/*; \
+        uv run check-wheel-contents "$tmp"/*.whl
+
+check: check-lock format-check lint typecheck test package-check
