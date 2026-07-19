@@ -1,0 +1,2 @@
+# Keep standalone Ruff invocations in the codemcp directory aligned with pyproject.toml.
+extend = "pyproject.toml"
