@@ -5,7 +5,11 @@ build-backend = "hatchling.build"
 [project]
 name = "codemcp-cli"
 version = "0.1.0"
-authors = [{ name = "Revaz Zakalashvili" }]
+authors = [
+  { name = "Revaz Zakalashvili" },
+  { name = "yolonir" },
+]
+maintainers = [{ name = "Revaz Zakalashvili" }]
 description = "Standalone CodeMCP CLI runtime for typed, sandboxed MCP Code Mode"
 readme = "README.md"
 license = "MIT"
@@ -57,6 +61,7 @@ test = [
 [project.urls]
 Issues = "https://github.com/revazi/codemcp-cli/issues"
 Repository = "https://github.com/revazi/codemcp-cli"
+Origin = "https://github.com/yolonir/pi-codemcp"
 
 [tool.hatch.build.targets.sdist]
 include = [

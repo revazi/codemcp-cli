@@ -2,6 +2,8 @@
 
 Thank you for contributing to `codemcp-cli`. Changes should preserve its typed interfaces, lazy MCP lifecycle, and sandbox boundary.
 
+[`yolonir`](https://github.com/yolonir) created [`pi-codemcp`](https://github.com/yolonir/pi-codemcp) and its internal sidecar. While working from that codebase, [Revaz Zakalashvili](https://github.com/revazi) rewrote the sidecar as this CLI and extracted it for use outside the Pi coding agent. The canonical project has not adopted this package; changes should preserve the possibility of a future integration without describing that integration as current behavior.
+
 ## Development setup
 
 Requirements:

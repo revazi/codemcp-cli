@@ -13,6 +13,14 @@ Standalone local CodeMCP CLI runtime for typed, sandboxed MCP Code Mode.
 
 This package is not published. Run it from this checkout with `uv` and the committed lockfile, or install it directly from its Git repository.
 
+## Origin and relationship to `pi-codemcp`
+
+[`pi-codemcp`](https://github.com/yolonir/pi-codemcp), created by [`yolonir`](https://github.com/yolonir), contains an internal Python sidecar. While working from that codebase, [Revaz Zakalashvili](https://github.com/revazi) redesigned and rewrote the sidecar as a proper `codemcp-cli` application.
+
+After completing the rewrite, Revaz recognized that the CLI could provide typed, sandboxed MCP Code Mode outside the Pi coding agent. The implementation was extracted into this dedicated repository as a general standalone runtime that can be independently versioned, tested, cached, and reused.
+
+The canonical `yolonir/pi-codemcp` repository does not currently use this package. This repository documents a possible future integration, but for now it should be evaluated as a standalone CLI inspired by and derived from the original sidecar—not as an installed component of `pi-codemcp`.
+
 ## Quick start
 
 ```bash
@@ -32,28 +40,22 @@ The installed package also supports the equivalent module entry point:
 python -m codemcp_cli serve --stdio
 ```
 
-## Using this repository from `pi-codemcp`
+## Possible future use in `pi-codemcp`
 
-The repository, Python distribution, and executable are named `codemcp-cli`. Because Python identifiers cannot contain hyphens, the import package is `codemcp_cli`.
+The canonical [`pi-codemcp`](https://github.com/yolonir/pi-codemcp) project has not adopted `codemcp-cli`. Integrating it would require changes to the extension's existing sidecar lifecycle and packaging. A future integration would need to decide how to:
 
-For a Python `pi-codemcp` project managed by uv, use a tagged Git dependency:
+- distribute or install a reviewed `codemcp-cli` build without imposing manual setup on users;
+- launch `codemcp-cli serve --stdio` and supervise its lifecycle;
+- pass Pi's MCP config, settings, OAuth, catalog, and chain paths;
+- verify sidecar identity and version compatibility;
+- handle first-run provisioning, offline behavior, upgrades, and rollback; and
+- test the TypeScript extension and Python runtime together.
 
-```toml
-[project]
-dependencies = ["codemcp-cli"]
+No claim is made that `pi-codemcp` users currently receive this CLI. This repository is being presented to the upstream author as a standalone optimization proposal.
 
-[tool.uv.sources]
-codemcp-cli = { git = "https://github.com/your-org/codemcp-cli.git", tag = "v0.1.0" }
-```
+## Python embedding
 
-During local development, point uv at a sibling checkout instead:
-
-```toml
-[tool.uv.sources]
-codemcp-cli = { path = "../codemcp-cli", editable = true }
-```
-
-Python integrations should use the supported API module rather than internal modules:
+The distribution and executable are named `codemcp-cli`. Because Python identifiers cannot contain hyphens, the import package is `codemcp_cli`. Python integrations can use the supported API module directly:
 
 ```python
 from codemcp_cli.api import StatusResponse, create_runtime, resolve_runtime_paths
@@ -68,14 +70,7 @@ async def inspect_status() -> StatusResponse:
         await runtime.close()
 ```
 
-If `pi-codemcp` is a TypeScript/JavaScript extension, it cannot directly import the Python package. Install or resolve the `codemcp-cli` executable and run it as an MCP stdio sidecar:
-
-```bash
-uvx --from git+https://github.com/your-org/codemcp-cli.git@v0.1.0 \
-  codemcp-cli serve --stdio --agent-dir ~/.pi/agent
-```
-
-Pin integrations to a release tag or commit instead of a moving branch. The wheel includes a `py.typed` marker, so Python consumers receive the package's type information.
+The wheel includes a `py.typed` marker, so Python consumers receive the package's type information.
 
 ## MCP configuration
 
@@ -211,9 +206,9 @@ GitHub Actions runs quality checks once, enforces at least 80% branch-aware cove
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, security boundaries, testing, packaging, and pull request guidelines.
 
-## Author
+## Authors and credits
 
-Created and maintained by [Revaz Zakalashvili](https://github.com/revazi).
+[`yolonir`](https://github.com/yolonir) created [`pi-codemcp`](https://github.com/yolonir/pi-codemcp) and its internal sidecar. While working from that codebase, [Revaz Zakalashvili](https://github.com/revazi) created this CLI rewrite, extracted it into a standalone package, and now maintains this repository. The rewrite has not yet been adopted by the canonical `pi-codemcp` project.
 
 ## License
 
