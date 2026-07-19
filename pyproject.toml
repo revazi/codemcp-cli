@@ -5,6 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "codemcp-cli"
 version = "0.1.0"
+authors = [{ name = "Revaz Zakalashvili" }]
 description = "Standalone CodeMCP CLI runtime for typed, sandboxed MCP Code Mode"
 readme = "README.md"
 license = "MIT"
@@ -59,6 +60,7 @@ Repository = "https://github.com/revazi/codemcp-cli"
 
 [tool.hatch.build.targets.sdist]
 include = [
+  "/CONTRIBUTING.md",
   "/LICENSE",
   "/README.md",
   "/pyproject.toml",

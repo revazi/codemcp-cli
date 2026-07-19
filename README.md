@@ -199,3 +199,15 @@ just package-check   # build and validate wheel/sdist metadata and contents
 ```
 
 GitHub Actions runs quality checks once, enforces at least 80% branch-aware coverage while testing the locked environment on Python 3.12–3.14, validates an installed wheel, and retains coverage and distribution artifacts. Action revisions and the uv version are pinned; Dependabot proposes dependency and action updates.
+
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup, security boundaries, testing, packaging, and pull request guidelines.
+
+## Author
+
+Created and maintained by [Revaz Zakalashvili](https://github.com/revazi).
+
+## License
+
+Licensed under the [MIT License](LICENSE).
