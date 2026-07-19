@@ -89,7 +89,6 @@ skip_covered = true
 output = "coverage.xml"
 
 [tool.ruff]
-required-version = "==0.15.21"
 target-version = "py312"
 line-length = 100
 src = ["src/codemcp_cli"]
