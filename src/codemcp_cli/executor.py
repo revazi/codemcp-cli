@@ -27,7 +27,7 @@ if TYPE_CHECKING:
 
 RESULT_BYTE_LIMIT = 16 * 1024
 SHAPE_FIELD_LIMIT = 20
-CHAIN_INPUT_EXTERNAL = "__codemcp_saved_chain_input"
+CHAIN_INPUT_EXTERNAL = "__codemcp_cli_saved_chain_input"
 
 
 class ExecutionContext:
@@ -45,7 +45,7 @@ class ExecutionContext:
         self.calls_made = 0
         self.chain_calls = 0
         self.chain_stack: ContextVar[tuple[str, ...]] = ContextVar(
-            "codemcp_chain_stack",
+            "codemcp_cli_chain_stack",
             default=(),
         )
 
@@ -330,7 +330,7 @@ class MontyExecutor:
         try:
             monty = await pydantic_monty.Monty.acreate(
                 runtime_code,
-                script_name="codemcp_execute.py",
+                script_name="codemcp_cli_execute.py",
             )
         except (pydantic_monty.MontySyntaxError, RuntimeError) as error:
             return self._failure(
@@ -467,7 +467,7 @@ class MontyExecutor:
             return
         await pydantic_monty.Monty.acreate(
             wrapped_code,
-            script_name="codemcp_execute.py",
+            script_name="codemcp_cli_execute.py",
             type_check=True,
             type_check_stubs=type_stubs,
         )
@@ -553,18 +553,18 @@ def _wrap_code(
     if typed and uses_input:
         invocation = ""
     elif uses_input:
-        invocation = f"await __codemcp_main(await {CHAIN_INPUT_EXTERNAL}())\n"
+        invocation = f"await __codemcp_cli_main(await {CHAIN_INPUT_EXTERNAL}())\n"
     else:
-        invocation = "await __codemcp_main()\n"
+        invocation = "await __codemcp_cli_main()\n"
     return (
-        f"async def __codemcp_main({signature}){return_annotation}:\n"
+        f"async def __codemcp_cli_main({signature}){return_annotation}:\n"
         f"{textwrap.indent(normalized, '    ')}\n\n"
         f"{invocation}"
     )
 
 
 def _rewrite_sdk_calls(code: str, catalog: ToolCatalog) -> str:
-    tree = ast.parse(code, filename="codemcp_execute.py", mode="exec")
+    tree = ast.parse(code, filename="codemcp_cli_execute.py", mode="exec")
 
     class FacadeCallRewriter(ast.NodeTransformer):
         @override

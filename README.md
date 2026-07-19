@@ -1,20 +1,20 @@
-# codemcp
+# codemcp-cli
 
-Standalone local CodeMCP CLI/runtime for typed, sandboxed MCP Code Mode.
+Standalone local CodeMCP CLI runtime for typed, sandboxed MCP Code Mode.
 
-`codemcp` reads a local MCP configuration, discovers upstream MCP tools lazily, exposes a typed Python SDK facade for those tools, and executes model-authored call graphs inside Pydantic Monty's sandbox. It can also save reusable typed call graphs as scoped chains.
+`codemcp-cli` reads a local MCP configuration, discovers upstream MCP tools lazily, exposes a typed Python SDK facade for those tools, and executes model-authored call graphs inside Pydantic Monty's sandbox. It can also save reusable typed call graphs as scoped chains.
 
 This package is not published. Run it from this checkout with `uv` and the committed lockfile, or install it directly from its Git repository.
 
 ## Quick start
 
 ```bash
-uv run --frozen codemcp --help
-uv run --frozen codemcp doctor --agent-dir ~/.pi/agent
-uv run --frozen codemcp status --agent-dir ~/.pi/agent
-uv run --frozen codemcp search "linear issues" --agent-dir ~/.pi/agent
-uv run --frozen codemcp execute --agent-dir ~/.pi/agent --code-file plan.py
-uv run --frozen codemcp serve --agent-dir ~/.pi/agent --stdio
+uv run --frozen codemcp-cli --help
+uv run --frozen codemcp-cli doctor --agent-dir ~/.pi/agent
+uv run --frozen codemcp-cli status --agent-dir ~/.pi/agent
+uv run --frozen codemcp-cli search "linear issues" --agent-dir ~/.pi/agent
+uv run --frozen codemcp-cli execute --agent-dir ~/.pi/agent --code-file plan.py
+uv run --frozen codemcp-cli serve --agent-dir ~/.pi/agent --stdio
 ```
 
 `status` reports cached state without starting upstream servers. `search` discovers upstream catalogs as needed. `execute` discovers/connects only servers referenced by the submitted code.
@@ -22,34 +22,34 @@ uv run --frozen codemcp serve --agent-dir ~/.pi/agent --stdio
 The installed package also supports the equivalent module entry point:
 
 ```bash
-python -m codemcp serve --stdio
+python -m codemcp_cli serve --stdio
 ```
 
 ## Using this repository from `pi-codemcp`
 
-The repository name may be `codemcp-cli`; its Python distribution and import package remain `codemcp`, and its stable executable remains `codemcp`.
+The repository, Python distribution, and executable are named `codemcp-cli`. Because Python identifiers cannot contain hyphens, the import package is `codemcp_cli`.
 
 For a Python `pi-codemcp` project managed by uv, use a tagged Git dependency:
 
 ```toml
 [project]
-dependencies = ["codemcp"]
+dependencies = ["codemcp-cli"]
 
 [tool.uv.sources]
-codemcp = { git = "https://github.com/your-org/codemcp-cli.git", tag = "v0.1.0" }
+codemcp-cli = { git = "https://github.com/your-org/codemcp-cli.git", tag = "v0.1.0" }
 ```
 
 During local development, point uv at a sibling checkout instead:
 
 ```toml
 [tool.uv.sources]
-codemcp = { path = "../codemcp-cli", editable = true }
+codemcp-cli = { path = "../codemcp-cli", editable = true }
 ```
 
 Python integrations should use the supported API module rather than internal modules:
 
 ```python
-from codemcp.api import StatusResponse, create_runtime, resolve_runtime_paths
+from codemcp_cli.api import StatusResponse, create_runtime, resolve_runtime_paths
 
 
 async def inspect_status() -> StatusResponse:
@@ -61,11 +61,11 @@ async def inspect_status() -> StatusResponse:
         await runtime.close()
 ```
 
-If `pi-codemcp` is a TypeScript/JavaScript extension, it cannot directly import the Python package. Install or resolve the `codemcp` executable and run it as an MCP stdio sidecar:
+If `pi-codemcp` is a TypeScript/JavaScript extension, it cannot directly import the Python package. Install or resolve the `codemcp-cli` executable and run it as an MCP stdio sidecar:
 
 ```bash
 uvx --from git+https://github.com/your-org/codemcp-cli.git@v0.1.0 \
-  codemcp serve --stdio --agent-dir ~/.pi/agent
+  codemcp-cli serve --stdio --agent-dir ~/.pi/agent
 ```
 
 Pin integrations to a release tag or commit instead of a moving branch. The wheel includes a `py.typed` marker, so Python consumers receive the package's type information.
@@ -101,19 +101,19 @@ Supported upstream transports are stdio, Streamable HTTP, and SSE. Remote server
 
 Path resolution can be controlled by CLI flags or environment variables:
 
-- `--agent-dir` / `PI_CODEMCP_AGENT_DIR` / `PI_CODING_AGENT_DIR`
+- `--agent-dir` / `PI_CODEMCP_CLI_AGENT_DIR` / `PI_CODING_AGENT_DIR`
 - `--config`
 - `--settings`
 - `--oauth-dir`
 - `--catalog-dir`
 - `--global-chains-dir`
-- `--project-chains-dir` / `PI_CODEMCP_PROJECT_CHAINS_DIR`
+- `--project-chains-dir` / `PI_CODEMCP_CLI_PROJECT_CHAINS_DIR`
 
-Default state lives under `<agent-dir>/pi-codemcp/`.
+Default state lives under `<agent-dir>/pi-codemcp-cli/`.
 
 ## Settings
 
-Optional settings live at `<agent-dir>/pi-codemcp/settings.json` unless overridden:
+Optional settings live at `<agent-dir>/pi-codemcp-cli/settings.json` unless overridden:
 
 ```json
 {
@@ -135,7 +135,7 @@ Settings are strict: unknown keys and unsafe values are rejected.
 First search for available calls:
 
 ```bash
-uv run --frozen codemcp search "issue update" --agent-dir ~/.pi/agent
+uv run --frozen codemcp-cli search "issue update" --agent-dir ~/.pi/agent
 ```
 
 Search results include a call form and type stub. Execute code with natural top-level `await` and `return`:
@@ -156,7 +156,7 @@ Arguments and declared structured results are validated against each tool's JSON
 Saved chains are typed, reusable call graphs with explicit JSON Schema input and output contracts.
 
 ```bash
-uv run --frozen codemcp chain save echo_value \
+uv run --frozen codemcp-cli chain save echo_value \
   --agent-dir ~/.pi/agent \
   --scope project \
   --description "Echo one integer value." \
@@ -164,14 +164,14 @@ uv run --frozen codemcp chain save echo_value \
   --input-schema '{"type":"object","properties":{"value":{"type":"integer"}},"required":["value"],"additionalProperties":false}' \
   --output-schema '{"type":"object","properties":{"value":{"type":"integer"}},"required":["value"],"additionalProperties":false}'
 
-uv run --frozen codemcp chain run echo_value \
+uv run --frozen codemcp-cli chain run echo_value \
   --agent-dir ~/.pi/agent \
   --input '{"value": 9}'
 
-uv run --frozen codemcp chain list --agent-dir ~/.pi/agent
-uv run --frozen codemcp chain revalidate echo_value \
+uv run --frozen codemcp-cli chain list --agent-dir ~/.pi/agent
+uv run --frozen codemcp-cli chain revalidate echo_value \
   --scope project --agent-dir ~/.pi/agent
-uv run --frozen codemcp chain delete echo_value \
+uv run --frozen codemcp-cli chain delete echo_value \
   --scope project --agent-dir ~/.pi/agent
 ```
 

@@ -29,15 +29,15 @@ jobs:
         run: uv lock --check
 
       - name: Check formatting
-        run: uv run ruff format --check src/codemcp tests/python tests/fixtures
+        run: uv run ruff format --check src/codemcp_cli tests/python tests/fixtures
 
       - name: Lint
-        run: uv run ruff check src/codemcp tests/python tests/fixtures
+        run: uv run ruff check src/codemcp_cli tests/python tests/fixtures
 
       - name: Type-check
         run: |
-          uv run mypy src/codemcp tests/python/test_executor.py tests/python/test_settings.py tests/python/test_cli.py
-          uv run ty check --project . src/codemcp tests/python/test_executor.py tests/python/test_settings.py tests/python/test_cli.py
+          uv run mypy src/codemcp_cli tests/python/test_executor.py tests/python/test_settings.py tests/python/test_cli.py
+          uv run ty check --project . src/codemcp_cli tests/python/test_executor.py tests/python/test_settings.py tests/python/test_cli.py
 
       - name: Test
         run: uv run pytest tests/python -q

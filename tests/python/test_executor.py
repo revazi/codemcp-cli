@@ -6,9 +6,9 @@ import pytest
 from mcp import types as mcp_types
 from pydantic import ValidationError
 
-from codemcp.executor import ExecutionResponse, ExecutionSettings, MontyExecutor
-from codemcp.json_types import JsonObject, JsonValue
-from codemcp.tool_catalog import ToolCatalog
+from codemcp_cli.executor import ExecutionResponse, ExecutionSettings, MontyExecutor
+from codemcp_cli.json_types import JsonObject, JsonValue
+from codemcp_cli.tool_catalog import ToolCatalog
 
 OBJECT = {"type": "object", "properties": {}, "additionalProperties": False}
 

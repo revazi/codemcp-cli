@@ -22,18 +22,18 @@ if TYPE_CHECKING:
     from .json_types import JsonObject, JsonValue
 
 
-PROGRAM_NAME = "codemcp"
+PROGRAM_NAME = "codemcp-cli"
 INTERRUPTED = 130
 
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog=PROGRAM_NAME,
-        description="Standalone CodeMCP CLI/runtime for typed, sandboxed MCP Code Mode.",
+        description="Standalone CodeMCP CLI runtime for typed, sandboxed MCP Code Mode.",
     )
     subcommands = parser.add_subparsers(dest="command", required=True)
 
-    serve = subcommands.add_parser("serve", help="Run CodeMCP as an MCP server.")
+    serve = subcommands.add_parser("serve", help="Run CodeMCP CLI as an MCP server.")
     _add_runtime_path_args(serve)
     serve.add_argument(
         "--stdio",
@@ -42,7 +42,7 @@ def build_parser() -> argparse.ArgumentParser:
         help="Serve the MCP protocol over standard input/output.",
     )
 
-    status = subcommands.add_parser("status", help="Print lazy CodeMCP runtime status as JSON.")
+    status = subcommands.add_parser("status", help="Print lazy CodeMCP CLI runtime status as JSON.")
     _add_runtime_path_args(status)
 
     discover = subcommands.add_parser(
@@ -101,7 +101,7 @@ def build_parser() -> argparse.ArgumentParser:
     chain_delete.add_argument("name", help="Saved chain name.")
     chain_delete.add_argument("--scope", choices=["project", "global"], required=True)
 
-    doctor = subcommands.add_parser("doctor", help="Check local CodeMCP paths and config.")
+    doctor = subcommands.add_parser("doctor", help="Check local CodeMCP CLI paths and config.")
     _add_runtime_path_args(doctor)
 
     return parser

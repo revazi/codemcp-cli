@@ -6,12 +6,12 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from codemcp.settings import CodeMcpSettings, load_settings
+from codemcp_cli.settings import CodeMcpCliSettings, load_settings
 
 
 def test_settings_load_defaults_and_camel_case_overrides(tmp_path: Path) -> None:
     path = tmp_path / "settings.json"
-    assert load_settings(path) == CodeMcpSettings()
+    assert load_settings(path) == CodeMcpCliSettings()
 
     path.write_text(
         json.dumps({

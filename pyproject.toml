@@ -3,9 +3,9 @@ requires = ["hatchling==1.28.0"]
 build-backend = "hatchling.build"
 
 [project]
-name = "codemcp"
+name = "codemcp-cli"
 version = "0.1.0"
-description = "Standalone CodeMCP CLI/runtime for typed, sandboxed MCP Code Mode"
+description = "Standalone CodeMCP CLI runtime for typed, sandboxed MCP Code Mode"
 readme = "README.md"
 license = { file = "LICENSE" }
 requires-python = ">=3.12"
@@ -19,7 +19,7 @@ dependencies = [
 ]
 
 [project.scripts]
-codemcp = "codemcp.cli:main"
+codemcp-cli = "codemcp_cli.cli:main"
 
 [dependency-groups]
 dev = [
@@ -41,7 +41,7 @@ include = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/codemcp"]
+packages = ["src/codemcp_cli"]
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -51,7 +51,7 @@ pythonpath = ["src", "."]
 required-version = "==0.15.21"
 target-version = "py312"
 line-length = 100
-src = ["src/codemcp"]
+src = ["src/codemcp_cli"]
 preview = true
 force-exclude = true
 
@@ -64,7 +64,7 @@ ignore = [
   "D101",   # Pydantic catalog models are self-describing.
   "D102",   # Internal methods are covered by types and focused class documentation.
   "D103",   # Internal functions are covered by types and focused module documentation.
-  "D104",   # Internal packages do not need package docstrings beyond codemcp/__init__.py.
+  "D104",   # Internal packages do not need package docstrings beyond codemcp_cli/__init__.py.
   "D105",   # Magic methods do not need docstrings.
   "D107",   # Constructor contracts are expressed by typed fields.
   "D203",   # Incompatible with D211.
@@ -78,7 +78,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.isort]
-known-first-party = ["codemcp"]
+known-first-party = ["codemcp_cli"]
 
 [tool.ruff.lint.mccabe]
 # JSON Schema compilation and execution-state handling are branch-heavy by nature.
@@ -125,7 +125,7 @@ python_version = "3.12"
 plugins = ["pydantic.mypy"]
 strict = true
 files = [
-  "src/codemcp",
+  "src/codemcp_cli",
   "tests/python/test_executor.py",
   "tests/python/test_settings.py",
   "tests/python/test_cli.py",

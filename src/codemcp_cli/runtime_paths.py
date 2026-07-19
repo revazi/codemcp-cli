@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from pathlib import Path
 
 DEFAULT_AGENT_DIR = Path.home() / ".pi" / "agent"
-CODEMCP_AGENT_DIR_ENV = "PI_CODEMCP_AGENT_DIR"
-CODEMCP_PROJECT_CHAINS_DIR_ENV = "PI_CODEMCP_PROJECT_CHAINS_DIR"
+CODEMCP_CLI_AGENT_DIR_ENV = "PI_CODEMCP_CLI_AGENT_DIR"
+CODEMCP_CLI_PROJECT_CHAINS_DIR_ENV = "PI_CODEMCP_CLI_PROJECT_CHAINS_DIR"
 PI_AGENT_DIR_ENV = "PI_CODING_AGENT_DIR"
 
 
@@ -41,7 +41,7 @@ def resolve_runtime_paths(
     project_chains_dir: Path | str | None = None,
 ) -> RuntimePaths:
     resolved_agent_dir = _agent_dir(agent_dir)
-    state_dir = resolved_agent_dir / "pi-codemcp"
+    state_dir = resolved_agent_dir / "pi-codemcp-cli"
     return RuntimePaths(
         config_path=_resolve_path(config_path) or resolved_agent_dir / "mcp.json",
         oauth_dir=_resolve_path(oauth_dir) or state_dir / "oauth",
@@ -55,14 +55,14 @@ def resolve_runtime_paths(
 def _agent_dir(value: Path | str | None) -> Path:
     if value is not None:
         return _resolve_path(value) or DEFAULT_AGENT_DIR
-    raw_agent_dir = os.environ.get(CODEMCP_AGENT_DIR_ENV) or os.environ.get(PI_AGENT_DIR_ENV)
+    raw_agent_dir = os.environ.get(CODEMCP_CLI_AGENT_DIR_ENV) or os.environ.get(PI_AGENT_DIR_ENV)
     return _resolve_path(raw_agent_dir) or DEFAULT_AGENT_DIR
 
 
 def _project_chains_dir(value: Path | str | None) -> Path | None:
     if value is not None:
         return _resolve_path(value)
-    return _resolve_path(os.environ.get(CODEMCP_PROJECT_CHAINS_DIR_ENV))
+    return _resolve_path(os.environ.get(CODEMCP_CLI_PROJECT_CHAINS_DIR_ENV))
 
 
 def _resolve_path(value: Path | str | None) -> Path | None:

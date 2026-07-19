@@ -230,7 +230,7 @@ class ToolCatalog(BaseModel):
             input_type, output_type, tool_definitions = builder.build()
             call = f"{namespace}.{method}"
             signature = f"await {call}(arguments: {input_type}) -> {output_type}"
-            external_name = f"__codemcp_{hashlib.sha256(public_name.encode()).hexdigest()[:16]}"
+            external_name = f"__codemcp_cli_{hashlib.sha256(public_name.encode()).hexdigest()[:16]}"
 
             spec = ToolSpec(
                 name=public_name,

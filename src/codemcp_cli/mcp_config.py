@@ -168,7 +168,7 @@ def normalize_mcp_config(
     raw_config: JsonObject,
     *,
     oauth_storage_dir: Path,
-    oauth_client_name: str = "pi-codemcp",
+    oauth_client_name: str = "pi-codemcp-cli",
 ) -> NormalizedConfig:
     server_block = raw_config.get("mcpServers", raw_config)
     if not isinstance(server_block, dict):

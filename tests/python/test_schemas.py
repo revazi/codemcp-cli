@@ -9,11 +9,11 @@ from mcp import types as mcp_types
 from mcp.shared.auth import OAuthClientInformationFull, OAuthToken
 from pydantic import ValidationError
 
-from codemcp import tool_catalog
-from codemcp.chains import ChainStore
-from codemcp.mcp_config import normalize_mcp_config
-from codemcp.models import NormalizedServerInfo
-from codemcp.tool_catalog import ToolCatalog
+from codemcp_cli import tool_catalog
+from codemcp_cli.chains import ChainStore
+from codemcp_cli.mcp_config import normalize_mcp_config
+from codemcp_cli.models import NormalizedServerInfo
+from codemcp_cli.tool_catalog import ToolCatalog
 
 
 def test_normalized_server_info_rejects_unknown_transport_and_fields() -> None:
@@ -50,9 +50,9 @@ def test_normalize_config_supports_transports_and_skips_disabled(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    monkeypatch.setenv("CODEMCP_TEST_TOKEN", "secret-token")
-    monkeypatch.setenv("UNLISTED_CODEMCP_SECRET", "must-not-leak")
-    monkeypatch.setenv("MY_PI_MCP_ENV_ALLOWLIST", "CODEMCP_TEST_TOKEN")
+    monkeypatch.setenv("CODEMCP_CLI_TEST_TOKEN", "secret-token")
+    monkeypatch.setenv("UNLISTED_CODEMCP_CLI_SECRET", "must-not-leak")
+    monkeypatch.setenv("MY_PI_MCP_ENV_ALLOWLIST", "CODEMCP_CLI_TEST_TOKEN")
     normalized = normalize_mcp_config(
         {
             "mcpServers": {
@@ -69,7 +69,7 @@ def test_normalize_config_supports_transports_and_skips_disabled(
                     "url": "https://example.test/mcp",
                     "headers": {
                         "x-test": "yes",
-                        "authorization": "Bearer ${CODEMCP_TEST_TOKEN}",
+                        "authorization": "Bearer ${CODEMCP_CLI_TEST_TOKEN}",
                     },
                 },
                 "events": {
@@ -101,8 +101,8 @@ def test_normalize_config_supports_transports_and_skips_disabled(
     stdio = normalized.config.mcpServers["stdio"]
     assert stdio.command == "example-server"
     assert stdio.env["EXPLICIT_VALUE"] == "configured"
-    assert stdio.env["CODEMCP_TEST_TOKEN"] == "secret-token"
-    assert "UNLISTED_CODEMCP_SECRET" not in stdio.env
+    assert stdio.env["CODEMCP_CLI_TEST_TOKEN"] == "secret-token"
+    assert "UNLISTED_CODEMCP_CLI_SECRET" not in stdio.env
     assert "directTools" not in stdio.model_extra
     http_server = normalized.config.mcpServers["http"]
     assert http_server.headers["authorization"] == "Bearer secret-token"

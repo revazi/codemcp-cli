@@ -1,4 +1,4 @@
-"""Public package metadata for the CodeMCP CLI/runtime."""
+"""Public package metadata for the CodeMCP CLI runtime."""
 
 from ._version import __version__ as __version__
 

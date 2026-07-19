@@ -9,9 +9,9 @@ from pathlib import Path
 import pytest
 from fastmcp import Client
 
-from codemcp import gateway
-from codemcp.chains import ChainEnabledChange
-from codemcp.json_types import JSON_OBJECT_ADAPTER, JsonObject
+from codemcp_cli import gateway
+from codemcp_cli.chains import ChainEnabledChange
+from codemcp_cli.json_types import JSON_OBJECT_ADAPTER, JsonObject
 
 
 def structured_data(structured: dict[str, object] | None) -> JsonObject:
@@ -64,18 +64,18 @@ def test_runtime_paths_honor_pi_agent_directory(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    project_chains_path = tmp_path / "workspace" / ".pi" / "pi-codemcp" / "chains"
-    monkeypatch.delenv("PI_CODEMCP_AGENT_DIR", raising=False)
+    project_chains_path = tmp_path / "workspace" / ".pi" / "pi-codemcp-cli" / "chains"
+    monkeypatch.delenv("PI_CODEMCP_CLI_AGENT_DIR", raising=False)
     monkeypatch.setenv("PI_CODING_AGENT_DIR", str(tmp_path))
-    monkeypatch.setenv("PI_CODEMCP_PROJECT_CHAINS_DIR", str(project_chains_path))
+    monkeypatch.setenv("PI_CODEMCP_CLI_PROJECT_CHAINS_DIR", str(project_chains_path))
 
     config, oauth, catalog, settings, global_chains, project_chains = gateway._runtime_paths()
 
     assert config == tmp_path / "mcp.json"
-    assert oauth == tmp_path / "pi-codemcp" / "oauth"
-    assert catalog == tmp_path / "pi-codemcp" / "catalog"
-    assert settings == tmp_path / "pi-codemcp" / "settings.json"
-    assert global_chains == tmp_path / "pi-codemcp" / "chains"
+    assert oauth == tmp_path / "pi-codemcp-cli" / "oauth"
+    assert catalog == tmp_path / "pi-codemcp-cli" / "catalog"
+    assert settings == tmp_path / "pi-codemcp-cli" / "settings.json"
+    assert global_chains == tmp_path / "pi-codemcp-cli" / "chains"
     assert project_chains == project_chains_path
 
 
@@ -85,7 +85,7 @@ def configure_environment(
     config_path: Path,
 ) -> None:
     assert config_path == tmp_path / "mcp.json"
-    monkeypatch.setenv("PI_CODEMCP_AGENT_DIR", str(tmp_path))
+    monkeypatch.setenv("PI_CODEMCP_CLI_AGENT_DIR", str(tmp_path))
 
 
 def test_gateway_reports_an_all_disabled_config(tmp_path: Path) -> None:
@@ -488,7 +488,7 @@ async def test_project_chains_shadow_global_chains_without_disabled_fallback(
         config_path,
         tmp_path / "oauth",
         tmp_path / "catalog",
-        project_chain_dir=tmp_path / "project" / ".pi" / "pi-codemcp" / "chains",
+        project_chain_dir=tmp_path / "project" / ".pi" / "pi-codemcp-cli" / "chains",
     )
     input_schema = {
         "type": "object",

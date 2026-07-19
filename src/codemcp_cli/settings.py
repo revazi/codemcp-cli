@@ -16,7 +16,7 @@ def _camel_case(name: str) -> str:
     return f"{alias[:-3]}KiB" if alias.endswith("Kib") else alias
 
 
-class CodeMcpSettings(BaseModel):
+class CodeMcpCliSettings(BaseModel):
     model_config = ConfigDict(
         alias_generator=_camel_case,
         populate_by_name=True,
@@ -48,9 +48,9 @@ class CodeMcpSettings(BaseModel):
         return self.cache_ttl_hours * 60 * 60
 
 
-def load_settings(path: Path) -> CodeMcpSettings:
+def load_settings(path: Path) -> CodeMcpCliSettings:
     try:
         raw = path.read_text(encoding="utf-8")
     except FileNotFoundError:
-        return CodeMcpSettings()
-    return CodeMcpSettings.model_validate_json(raw)
+        return CodeMcpCliSettings()
+    return CodeMcpCliSettings.model_validate_json(raw)

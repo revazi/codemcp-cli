@@ -7,7 +7,7 @@ from typing import Any
 
 import pytest
 
-from codemcp import cli, gateway
+from codemcp_cli import cli, gateway
 
 ARGUMENT_ERROR = 2
 
@@ -45,10 +45,10 @@ def test_cli_serve_stdio_delegates_to_gateway_main(
             "serve",
             (
                 tmp_path / "mcp.json",
-                tmp_path / "pi-codemcp" / "oauth",
-                tmp_path / "pi-codemcp" / "catalog",
-                tmp_path / "pi-codemcp" / "settings.json",
-                tmp_path / "pi-codemcp" / "chains",
+                tmp_path / "pi-codemcp-cli" / "oauth",
+                tmp_path / "pi-codemcp-cli" / "catalog",
+                tmp_path / "pi-codemcp-cli" / "settings.json",
+                tmp_path / "pi-codemcp-cli" / "chains",
                 None,
             ),
         )
@@ -105,7 +105,7 @@ def test_cli_execute_and_saved_chain_commands_are_json(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
     agent_dir = tmp_path / "agent"
-    project_chains = tmp_path / "project" / ".pi" / "pi-codemcp" / "chains"
+    project_chains = tmp_path / "project" / ".pi" / "pi-codemcp-cli" / "chains"
     agent_dir.mkdir()
     write_config(agent_dir / "mcp.json")
     code_file = tmp_path / "plan.py"

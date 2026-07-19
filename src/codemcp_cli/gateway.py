@@ -36,7 +36,7 @@ from .models import (
     UpstreamToolStatus,
 )
 from .runtime_paths import resolve_runtime_paths
-from .settings import CodeMcpSettings, load_settings
+from .settings import CodeMcpCliSettings, load_settings
 from .tool_catalog import ToolCatalog
 
 if TYPE_CHECKING:
@@ -142,7 +142,7 @@ class ServerHandle:
                 await exit_stack.enter_async_context(
                     Client(
                         self.server_config.to_transport(),
-                        name=f"pi-codemcp-{self.info.name}",
+                        name=f"pi-codemcp-cli-{self.info.name}",
                     )
                 ),
             )
@@ -223,7 +223,7 @@ class GatewayRuntime:
         *,
         config_path: Path,
         settings_path: Path,
-        settings: CodeMcpSettings,
+        settings: CodeMcpCliSettings,
         normalized: NormalizedConfig,
         handles: dict[str, ServerHandle],
         chain_store: ScopedChainStore,
@@ -717,7 +717,7 @@ class GatewayRuntime:
 
 def _parse_code(code: str) -> ast.AST | None:
     normalized = textwrap.dedent(code).strip("\n")
-    wrapped = f"async def __codemcp_main():\n{textwrap.indent(normalized, '    ')}\n"
+    wrapped = f"async def __codemcp_cli_main():\n{textwrap.indent(normalized, '    ')}\n"
     try:
         return ast.parse(wrapped, mode="exec")
     except SyntaxError:
@@ -742,7 +742,7 @@ _runtime_state = RuntimeState()
 
 def _require_runtime() -> GatewayRuntime:
     if _runtime_state.runtime is None:
-        raise RuntimeError("CodeMCP runtime is not initialized")
+        raise RuntimeError("CodeMCP CLI runtime is not initialized")
     return _runtime_state.runtime
 
 
@@ -781,7 +781,7 @@ async def lifespan(_: FastMCP[None]) -> AsyncIterator[None]:
 
 
 mcp = FastMCP(
-    "codemcp",
+    "codemcp-cli",
     instructions=(
         "Search MCP tools and saved chains, then execute a typed sandboxed Python call graph."
     ),
@@ -807,7 +807,7 @@ async def discover(server: str) -> StatusResponse:
 
 @mcp.tool
 async def reload_settings() -> StatusResponse:
-    """Reload persisted CodeMCP settings and tool policy."""
+    """Reload persisted CodeMCP CLI settings and tool policy."""
     return await _require_runtime().reload_settings()
 
 

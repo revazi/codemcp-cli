@@ -11,14 +11,14 @@ from .executor import ExecutionResponse
 from .gateway import GatewayRuntime, ManagerApplyResponse
 from .models import SearchResponse, StatusResponse
 from .runtime_paths import RuntimePaths, resolve_runtime_paths
-from .settings import CodeMcpSettings
+from .settings import CodeMcpCliSettings
 
 __all__ = [
     "ChainEnabledChange",
     "ChainListResponse",
     "ChainScope",
     "ChainStatusView",
-    "CodeMcpSettings",
+    "CodeMcpCliSettings",
     "ExecutionResponse",
     "GatewayRuntime",
     "ManagerApplyResponse",

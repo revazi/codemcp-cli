@@ -5,14 +5,14 @@ from pathlib import Path
 
 import pytest
 
-import codemcp
-from codemcp.api import GatewayRuntime, create_runtime, resolve_runtime_paths
+import codemcp_cli
+from codemcp_cli.api import GatewayRuntime, create_runtime, resolve_runtime_paths
 
 
 def test_distribution_exposes_version_and_typing_marker() -> None:
-    assert codemcp.__version__ == version("codemcp")
-    assert codemcp.__file__ is not None
-    assert Path(codemcp.__file__).with_name("py.typed").is_file()
+    assert codemcp_cli.__version__ == version("codemcp-cli")
+    assert codemcp_cli.__file__ is not None
+    assert Path(codemcp_cli.__file__).with_name("py.typed").is_file()
 
 
 @pytest.mark.asyncio
