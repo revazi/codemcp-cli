@@ -25,10 +25,10 @@ classifiers = [
   "Typing :: Typed",
 ]
 dependencies = [
-  "fastmcp==3.4.4",
+  "fastmcp==3.4.5",
   "httpx==0.28.1",
   "pydantic==2.13.4",
-  "pydantic-monty==0.0.18",
+  "pydantic-monty==0.0.19",
   "py-key-value-aio[filetree,pydantic]==0.4.5",
   "rapidfuzz==3.14.5",
 ]
