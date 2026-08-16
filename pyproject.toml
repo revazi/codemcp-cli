@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling==1.31.0"]
+requires = ["hatchling==1.32.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -41,16 +41,16 @@ dev = [
   { include-group = "lint" },
   { include-group = "package" },
   { include-group = "test" },
-  "prek==0.4.10",
+  "prek==0.4.13",
 ]
 lint = [
   "mypy==2.3.0",
-  "ruff==0.15.22",
-  "ty==0.0.61",
+  "ruff==0.16.2",
+  "ty==0.0.71",
 ]
 package = [
   "check-wheel-contents==0.6.3",
-  "twine==6.2.0",
+  "twine==7.0.0",
 ]
 test = [
   "pytest==9.1.1",
